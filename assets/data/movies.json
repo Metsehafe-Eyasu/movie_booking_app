@@ -1,0 +1,43 @@
+[
+    {
+        "id": 1,
+        "title": "The Shawshank Redemption",
+        "genre": "Drama",
+        "release_year": 1994,
+        "poster_image": "assets/images/movies/the_shawshank_redemption.jpg",
+        "showtimes": ["12:00 PM", "5:00 PM", "8:00 PM"]
+    },
+    {
+        "id": 2,
+        "title": "The Godfather",
+        "genre": "Crime, Drama",
+        "release_year": 1972,
+        "poster_image": "assets/images/movies/the_godfather.jpg",
+        "showtimes": ["2:00 PM", "6:00 PM", "9:00 PM"]
+    },
+    {
+        "id": 3,
+        "title": "The Dark Knight",
+        "genre": "Action, Crime, Thriller",
+        "release_year": 2008,
+        "poster_image": "assets/images/movies/the_dark_knight.jpg",
+        "showtimes": ["1:00 PM", "4:00 PM", "7:00 PM"]
+    },
+    {
+        "id": 4,
+        "title": "Pulp Fiction",
+        "genre": "Crime, Comedy, Mystery",
+        "release_year": 1994,
+        "poster_image": "assets/images/movies/pulp_fiction.jpg",
+        "showtimes": ["3:00 PM", "6:30 PM", "9:30 PM"]
+    },
+    {
+        "id": 5,
+        "title": "12 Angry Men",
+        "genre": "Drama, Legal",
+        "release_year": 1957,
+        "poster_image": "assets/images/movies/12_angry_men.jpg",
+        "showtimes": ["4:30 PM", "7:30 PM", "10:30 PM"]
+    }
+]
+  
