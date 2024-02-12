@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/movie.dart';
+import '../models/movie.dart';
 import '../models/seats.dart';
 
 class SeatSelectionPage extends StatefulWidget {
   final Seats seats;
   final Movie movie;
+  final int showtimeIndex;
 
-  const SeatSelectionPage({super.key, required this.seats, required this.movie});
+  const SeatSelectionPage(
+      {super.key,
+      required this.seats,
+      required this.movie,
+      required this.showtimeIndex});
 
   @override
   State<SeatSelectionPage> createState() => _SeatSelectionPageState();
@@ -18,7 +23,8 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
   @override
   Widget build(BuildContext context) {
     final totalSeats = widget.seats.allSeats.length;
-    final availableSeats = widget.seats.getAvailableSeats();
+    final availableSeats = widget.seats.allSeats;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seat Selection'),
@@ -49,9 +55,8 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
               ],
             ),
             ElevatedButton(
-              onPressed: selectedSeats.isNotEmpty
-                  ? () => _proceedToNextStep()
-                  : null,
+              onPressed:
+                  selectedSeats.isNotEmpty ? () => _proceedToNextStep() : null,
               child: const Text('Proceed'),
             ),
           ],
@@ -107,7 +112,6 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
   }
 
   _proceedToNextStep() {
-    
     // Navigator.pushNamed(context, '/booking_confirmation', arguments: {
     //   'seats': selectedSeats,
     //   'movie': widget.movie,
@@ -130,6 +134,7 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
               Navigator.pushNamed(context, '/booking_confirmation', arguments: {
                 'seats': selectedSeats,
                 'movie': widget.movie,
+                'timeSlotId': widget.showtimeIndex
               });
             },
             child: const Text('Proceed'),

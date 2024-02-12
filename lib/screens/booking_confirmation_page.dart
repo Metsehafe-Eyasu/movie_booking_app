@@ -1,55 +1,30 @@
-import 'dart:convert';
 import 'dart:math';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../models/movie.dart';
 import '../models/seats.dart';
+import '../models/booked_seats.dart';
+
+import '../utils/data.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
   final List<Seat> selectedSeats;
   final Movie movie;
+  final int timeSlotId;
 
   const BookingConfirmationPage({
     super.key,
     required this.selectedSeats,
     required this.movie,
+    required this.timeSlotId,
   });
 
-  Future<void> updateJson(List<Seat> selectedSeats) async {
-    // Load seats JSON data
-    final jsonData = await rootBundle.loadString('assets/data/seats.json');
-    final data = jsonDecode(jsonData) as Map<String, dynamic>;
-    final movies = data['movies'] as List<dynamic>;
-
-    // Find the matching movie data and update its "seats"
-    final movieData = movies.firstWhere((data) => data['movie_id'] == movie.id);
-    final seats = Seats.fromJson(movieData);
-
-    // Update booked seats in the allSeats list
+  Future<void> updateJson(List<Seat> selectedSeats, int confirmationNumber) async {
     for (final seat in selectedSeats) {
-      seats.allSeats[seat.row * seats.columns + seat.column]
-          .updateAvailability(false);
+      markSeatBooked(movie, timeSlotId, seat);
     }
-    seats.printSeats();
-    // Update the matching movie data with the modified seats
-    movieData['seats'] = seats.allSeats.map((seat) => seat.toJson()).toList();
-  
-    // Update and save the entire JSON data
-    final updatedData = jsonEncode(data);
-
-    // Write the updated JSON to the file
-    final appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    final seatsFile = File('${appDocumentsDirectory.path}/seats.json');
-
-    try {
-      await seatsFile.writeAsString(updatedData);
-    } catch (error) {
-      // Handle error gracefully, e.g., show a user message
-    }
+    bookedSeatsList.add(BookedSeats(movie: movie, timeSlotId: timeSlotId, seats: selectedSeats, confirmationNumber: confirmationNumber));
   }
 
   @override
@@ -133,9 +108,8 @@ class BookingConfirmationPage extends StatelessWidget {
             ),
 
             ElevatedButton(
-              onPressed: () async {
-                await updateJson(selectedSeats); // Update JSON asynchronously
-                // ignore: use_build_context_synchronously
+              onPressed: () {
+                updateJson(selectedSeats, confirmationNumber);
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/', (route) => false);
               },

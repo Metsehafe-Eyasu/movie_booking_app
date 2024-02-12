@@ -20,6 +20,12 @@ class HomePage extends StatelessWidget {
           return MovieListItem(movie: movie);
         },
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(
+            context, '/booked_seats'), // Route to booked seats screen
+        label: const Text('Booked Seats'),
+        icon: const Icon(Icons.bookmark),
+      ),
     );
   }
 }

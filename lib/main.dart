@@ -1,36 +1,18 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import './screens/home_page.dart';
 import './screens/movie_details_page.dart';
 import './screens/seat_selection_page.dart';
 import './screens/booking_confirmation_page.dart';
+import './screens/booked_seats_page.dart';
+
 import './models/movie.dart';
 import './models/seats.dart';
+import './utils/data.dart';
 
-Future<List<Movie>> loadMovies() async {
-  final jsonStr = await rootBundle.loadString('assets/data/movies.json');
-  final decodedData = jsonDecode(jsonStr) as List<dynamic>;
-  final movies = decodedData.map((data) => Movie.fromJson(data)).toList();
-  return movies;
-}
-
-Future<Seats> fetchSeatData(int movieId, int showtimeIndex) async {
-  final jsonData = await rootBundle.loadString('assets/data/seats.json');
-  final data = jsonDecode(jsonData) as Map<String, dynamic>;
-  final movies = data['movies'] as List<dynamic>;
-  final movieData = movies.firstWhere((data) => data['movie_id'] == movieId);
-
-  if (movieData == null) {
-    throw Exception('Movie with ID $movieId not found in seats.json');
-  }
-  return Seats.fromJson(movieData);
-}
-
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp(movies: await loadMovies()));
+  runApp(MyApp(movies: movies));
 }
 
 class MyApp extends StatelessWidget {
@@ -52,6 +34,7 @@ class MyApp extends StatelessWidget {
         '/seat_selection': (context) => _buildSeatSelectionPage(context),
         '/booking_confirmation': (context) =>
             _buildBookingConfirmationPage(context),
+        '/booked_seats': (context) => const BookedSeatsScreen(),
       },
       initialRoute: '/',
     );
@@ -66,27 +49,15 @@ Widget _buildMovieDetailsPage(BuildContext context) {
 Widget _buildSeatSelectionPage(BuildContext context) {
   final arguments =
       ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-  final movieId = arguments['movieId'] as int;
   final showtimeIndex = arguments['showtimeIndex'] as int;
   final movie = arguments['movie'] as Movie;
 
-  Future<Seats> seatDataFuture = fetchSeatData(movieId, showtimeIndex);
+  Seats seats = fetchSeatData(movie, showtimeIndex);
 
-  return FutureBuilder<Seats>(
-    future: seatDataFuture,
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        final seats = snapshot.data!;
-        return SeatSelectionPage(
-          seats: seats,
-          movie: movie,
-        );
-      } else if (snapshot.hasError) {
-        return Text('Error: ${snapshot.error}');
-      } else {
-        return const CircularProgressIndicator();
-      }
-    },
+  return SeatSelectionPage(
+    seats: seats,
+    movie: movie,
+    showtimeIndex: showtimeIndex
   );
 }
 
@@ -95,5 +66,6 @@ Widget _buildBookingConfirmationPage(BuildContext context) {
       ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
   final seats = arguments['seats'] as List<Seat>;
   final movie = arguments['movie'] as Movie;
-  return BookingConfirmationPage(selectedSeats: seats, movie: movie);
+  final timeSlotId = arguments['timeSlotId'] as int;
+  return BookingConfirmationPage(selectedSeats: seats, movie: movie, timeSlotId: timeSlotId);
 }

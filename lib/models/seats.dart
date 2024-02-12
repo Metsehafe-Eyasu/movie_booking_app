@@ -1,48 +1,14 @@
 class Seats {
-  final int movieId;
   final int rows;
   final int columns;
-  final List<List<int>> seatAvailability;
   final List<Seat> allSeats;
 
   Seats({
-    required this.movieId,
     required this.rows,
     required this.columns,
-    required this.seatAvailability,
     required this.allSeats,
   });
 
-  factory Seats.fromJson(Map<String, dynamic> json) {
-    final movieId = json['movie_id'] as int;
-    final rows = json['rows'] as int;
-    final columns = json['columns'] as int;
-    final seatAvailability = List<List<int>>.from(
-      (json['seats'] as List<dynamic>).map((row) => List<int>.from(row)),
-    );
-
-    final allSeats = List<Seat>.generate(
-      rows * columns,
-      (index) {
-        final row = index ~/ columns;
-        final col = index % columns;
-        return Seat(
-          movieId: movieId,
-          row: row,
-          column: col,
-          isAvailable: seatAvailability[row][col] == 0 ? true : false,
-        );
-      },
-    );
-
-    return Seats(
-      movieId: movieId,
-      rows: rows,
-      columns: columns,
-      seatAvailability: seatAvailability,
-      allSeats: allSeats,
-    );
-  }
 
   // Get a specific seat by its row and column
   Seat getSeatAt(int row, int column) {
@@ -70,13 +36,11 @@ class Seats {
 }
 
 class Seat {
-  final int movieId;
   final int row;
   final int column;
   bool isAvailable;
 
   Seat({
-    required this.movieId,
     required this.row,
     required this.column,
     required this.isAvailable,
@@ -84,14 +48,5 @@ class Seat {
 
   void updateAvailability(bool isAvailable) {
     this.isAvailable = isAvailable;
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'movieId': movieId,
-      'row': row,
-      'column': column,
-      'isAvailable': isAvailable,
-    };
   }
 }
